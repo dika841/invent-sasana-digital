@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import {
+  Button,
   Col,
   Dropdown,
   Flex,
@@ -10,17 +11,20 @@ import {
   MenuProps,
   Row,
   Space,
+  Tooltip,
   Typography,
 } from "antd";
 import { DownOutlined, MenuOutlined } from "@ant-design/icons";
 import "./index.css";
 import Image from "next/image";
+import { AlignLeft, AlignRight } from "lucide-react";
 
 const { Header, Sider } = Layout;
 const colorToken = {
   colorBg: "#fff",
   colorText: "#383E49",
 };
+
 export interface LayoutWithHeaderProps {
   children: React.ReactNode;
   header: {
@@ -36,10 +40,12 @@ export interface LayoutWithHeaderProps {
     menu: MenuProps["items"];
   };
 }
+
 export interface ISidebarProps {
   width: number;
   menu: MenuProps["items"];
 }
+
 export interface IHeaderContentProps {
   brandLogo: React.ReactNode;
   menu?: React.ReactNode;
@@ -78,6 +84,7 @@ const HeaderContent: React.FC<IHeaderContentProps> = ({
         top: 0,
         zIndex: 12,
         width: "100%",
+        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.05)",
       }}
       onClick={onClick}
     >
@@ -132,6 +139,11 @@ export const LayoutWithHeader: React.FC<LayoutWithHeaderProps> = ({
 }) => {
   const { md } = Grid.useBreakpoint();
   const [collapsedOnMobile, setCollapsedOnMobile] = React.useState(true);
+  const [collapsed, setCollapsed] = React.useState(false);
+
+  const toggleCollapsed = () => {
+    setCollapsed(!collapsed);
+  };
 
   return (
     <Layout className="layout-with-header">
@@ -143,44 +155,81 @@ export const LayoutWithHeader: React.FC<LayoutWithHeaderProps> = ({
       />
       <Layout style={{ height: "calc(100vh - 64px)", overflow: "auto" }}>
         <Sider
-          collapsed={!md && collapsedOnMobile}
-          collapsedWidth="0px"
+          collapsed={!md ? collapsedOnMobile : collapsed}
+          collapsedWidth={!md ? 0 : 80}
           width={sidebar.width}
+          style={{ position: "relative" }}
         >
           <Flex
             align="center"
-            style={{ padding: "20px 20px", backgroundColor: "#C52424" }}
+            style={{
+              padding: "24px",
+              backgroundColor: "#C52424",
+              position: "relative",
+              zIndex: 1,
+            }}
             gap={8}
           >
-            <Image
-              src="/assets/building.svg"
-              alt="Outlet"
-              height={56}
-              width={56}
-              priority
-            />
-            <Flex vertical gap={4}>
-              <Typography.Text strong style={{ color: "#fff" }}>
-                Outlet
-              </Typography.Text>
-              <Dropdown
-                menu={{
-                  items,
-                  selectable: true,
-                  defaultSelectedKeys: ["3"],
+            {!collapsed && (
+              <>
+                <Image
+                  src="/assets/building.svg"
+                  alt="Outlet"
+                  height={40}
+                  width={40}
+                  priority
+                  style={{ display: md ? "block" : "none" }}
+                />
+                <Flex
+                  vertical
+                  gap={4}
+                  style={{ display: md ? "flex" : "none" }}
+                >
+                  <Typography.Text
+                    strong
+                    style={{ color: "#fff", fontSize: 14 }}
+                  >
+                    Outlet
+                  </Typography.Text>
+                  <Dropdown
+                    menu={{
+                      items,
+                      selectable: true,
+                      defaultSelectedKeys: ["3"],
+                    }}
+                  >
+                    <Typography.Link style={{ color: "#fff", fontSize: 12 }}>
+                      <Space>
+                        Semua outlet
+                        <DownOutlined />
+                      </Space>
+                    </Typography.Link>
+                  </Dropdown>
+                </Flex>
+              </>
+            )}
+            <Tooltip title={collapsed ? "Expand" : "Collapse"}>
+              <Button
+                type="default"
+                onClick={toggleCollapsed}
+                shape="circle"
+                icon={
+                  collapsed ? (
+                    <AlignRight size={16} strokeWidth={1.5} />
+                  ) : (
+                    <AlignLeft size={16} strokeWidth={1.5} />
+                  )
+                }
+                style={{
+                  marginLeft: collapsed ? "0.2rem" : "auto",
+                  zIndex: 2,
                 }}
-              >
-                <Typography.Link style={{ color: "#fff", fontSize: 12 }}>
-                  <Space>
-                    Semua outlet
-                    <DownOutlined />
-                  </Space>
-                </Typography.Link>
-              </Dropdown>
-            </Flex>
+              />
+            </Tooltip>
           </Flex>
           <Menu
             mode="inline"
+            inlineCollapsed={collapsed}
             onSelect={sidebar.onSelect}
             onDeselect={sidebar.onDeselect}
             onClick={sidebar.onClick}
