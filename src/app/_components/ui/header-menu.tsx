@@ -1,7 +1,7 @@
-import { BellOutlined } from "@ant-design/icons";
 import { Badge, Button, Divider, Empty, Flex, List } from "antd";
 import Menu from "./menu/menu";
 import Link from "next/link";
+import { BellRing } from "lucide-react";
 
 const HeaderMenu = () => {
   return (
@@ -9,8 +9,11 @@ const HeaderMenu = () => {
       <Menu.Dropdown
         label={
           <Badge dot={false} offset={[-5, 5]}>
-            <Button shape="circle">
-              <BellOutlined />
+            <Button
+              shape="circle"
+              style={{ padding: 0, marginTop: "1.5rem", border: "none" }}
+            >
+              <BellRing size={24} strokeWidth={1.5} />
             </Button>
           </Badge>
         }
